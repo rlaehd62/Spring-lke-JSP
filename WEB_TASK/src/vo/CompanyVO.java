@@ -4,18 +4,21 @@ public class CompanyVO
 {
     /*
      * name: 회사 이름
+     * owner: 데이터 소유자
      * address: 회사 주소
-     * comment: 주석 (특이사항)
+     * comment: 주석 (추가정보)
      */
 
     private int id;
+    private String owner;
     private String name;
     private String address;
     private String comment;
 
-    public CompanyVO(int id, String name, String address, String comment)
+    public CompanyVO(int id, String owner, String name, String address, String comment)
     {
         this.id = id;
+        this.owner = owner;
         this.name = name;
         this.address = address;
         this.comment = comment;
@@ -61,6 +64,21 @@ public class CompanyVO
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CompanyVO companyVO = (CompanyVO) o;
+        return id == companyVO.id;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return id;
+    }
+
     public int getId()
     {
         return id;
@@ -69,5 +87,15 @@ public class CompanyVO
     public void setId(int id)
     {
         this.id = id;
+    }
+
+    public String getOwner()
+    {
+        return owner;
+    }
+
+    public void setOwner(String owner)
+    {
+        this.owner = owner;
     }
 }

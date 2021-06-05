@@ -1,5 +1,6 @@
 import annotation.CustomController;
 import annotation.EndPoint;
+import vo.CompanyVO;
 import vo.Response;
 import vo.dao.CompanyDAO;
 import vo.dao.MemberDAO;
@@ -59,6 +60,8 @@ public class MyController
             opID.ifPresent(id ->
             {
                 HttpSession session = request.getSession(true);
+                session.removeAttribute("isValid");
+                session.removeAttribute("userID");
                 session.setAttribute("isValid", true);
                 session.setAttribute("userID", id);
             });
@@ -68,11 +71,75 @@ public class MyController
         }
     }
 
-    @EndPoint("/cardList.do")
-    public Response test(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response)
+    @EndPoint("/companyInfo.do")
+    public Response companyInfo(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response)
     {
         CompanyDAO dao = new CompanyDAO();
-        request.setAttribute("list", dao.getAll());
+        Response result = new Response("/companyList.do", true);
+
+        Optional<String> optionalID = Optional.ofNullable(request.getParameter("companyID"));
+        if(!optionalID.isPresent()) return result;
+
+        Optional<CompanyVO> optionalVO = dao.verifyOwner(Integer.parseInt(optionalID.get()), request, false);
+        if(!optionalVO.isPresent()) return result;
+
+        response.setContentType("text/html; charset=UTF-8");
+        request.setAttribute("vo", optionalVO.get());
+        return new Response("company_view.jsp");
+    }
+
+    @EndPoint("/companyForm.do")
+    public Response companyForm(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response)
+    {
+        CompanyDAO dao = new CompanyDAO();
+
+        Optional<String> optionalID = Optional.ofNullable(request.getParameter("companyID"));
+        if(!optionalID.isPresent()) return new Response("company_write.jsp", true);
+
+        Optional<CompanyVO> optionalVO = dao.verifyOwner(Integer.parseInt(optionalID.get()), request, false);
+        if(!optionalVO.isPresent()) return new Response("/companyList.do", true);
+
+        request.setAttribute("vo", optionalVO.get());
+        return new Response("company_write.jsp");
+    }
+
+    @EndPoint("/insertCompany.do")
+    public void insertCompany(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws IOException
+    {
+        CompanyDAO dao = new CompanyDAO();
+        if(dao.insertCompany(request)) printMessage(response, "회사를 등록했습니다.", "/companyList.do");
+        else printMessage(response, "회사를 등록하는데 실패했습니다.", "/companyList.do");
+    }
+
+    @EndPoint("/updateCompany.do")
+    public Response updateCompany(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws IOException
+    {
+        CompanyDAO dao = new CompanyDAO();
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
+
+        Optional<String> optionalID = Optional.ofNullable(request.getParameter("companyID"));
+        if(!optionalID.isPresent()) return new Response("/companyList.do", true);
+
+        if(!dao.updateCompany(Integer.parseInt(optionalID.get()), request)) printMessage(response, "수정에 실패했습니다.", "");
+        return new Response("/companyInfo.do?companyID=" + optionalID.get());
+    }
+
+    @EndPoint("/deleteCompany.do")
+    public Response deleteCompany(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response)
+    {
+        CompanyDAO dao = new CompanyDAO();
+        Optional<String> optionalID = Optional.ofNullable(request.getParameter("companyID"));
+        if(!optionalID.isPresent()) return new Response("/companyList.do", true);
+        if(!dao.deleteCompany(Integer.parseInt(optionalID.get()), request)) return new Response("/companyInfo.do?companyID=" + optionalID.get(), true);
+        return new Response("/companyList.do", true);
+    }
+
+    @EndPoint("/companyList.do")
+    public Response companyList(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response)
+    {
+        CompanyDAO dao = new CompanyDAO();
+        request.setAttribute("list", dao.getAll(request));
         return new Response("index.jsp");
     }
 
@@ -82,7 +149,7 @@ public class MyController
         PrintWriter out = response.getWriter();
         out.println("<script>");
         out.println("alert('작업을 성공적으로 수행했습니다!');");
-        out.println("location.href = '/cardList.do'");
+        out.println("location.href = '/companyList.do'");
         out.println("</script>");
     }
 

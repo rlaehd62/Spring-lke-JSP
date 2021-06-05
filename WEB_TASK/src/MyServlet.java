@@ -31,6 +31,7 @@ public class MyServlet extends javax.servlet.http.HttpServlet
                 try
                 {
                     Object obj = bean.getClassObject();
+                    request.setCharacterEncoding("UTF-8");
                     Response res = (Response) method.invoke(obj, request, response);
 
                     if(Objects.isNull(res)) return;

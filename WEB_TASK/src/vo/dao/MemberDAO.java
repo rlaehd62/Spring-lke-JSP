@@ -68,6 +68,9 @@ public class MemberDAO
         } catch (Exception e)
         {
             e.printStackTrace();
+        } finally
+        {
+            close();
         }
         return false;
     }
