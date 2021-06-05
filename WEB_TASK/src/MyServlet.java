@@ -24,7 +24,7 @@ public class MyServlet extends javax.servlet.http.HttpServlet
         String command = RequestURI.substring(contextPath.length());
 
         BeanManager manager = BeanManager.getInstance();
-        manager.findBean("MyController").ifPresent(bean ->
+        for(ControllerBean bean : manager.allBeans())
         {
             bean.getMethod(command).ifPresent(method ->
             {
@@ -48,7 +48,7 @@ public class MyServlet extends javax.servlet.http.HttpServlet
                     e.printStackTrace();
                 }
             });
-        });
+        }
     }
 
     protected void doPost(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws javax.servlet.ServletException, IOException

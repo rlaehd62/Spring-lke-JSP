@@ -59,6 +59,11 @@ public class BeanManager
         return manager;
     }
 
+    public List<ControllerBean> allBeans()
+    {
+        return new ArrayList<>(manager.values());
+    }
+
     public Optional<ControllerBean> findBean(String key)
     {
         ControllerBean bean = manager.getOrDefault(key, null);

@@ -1,8 +1,11 @@
 import annotation.CustomController;
 import annotation.EndPoint;
+import service.Util;
 import vo.CompanyVO;
+import vo.EmployeeVO;
 import vo.Response;
 import vo.dao.CompanyDAO;
+import vo.dao.EmployeeDAO;
 import vo.dao.MemberDAO;
 
 import javax.jms.Session;
@@ -24,8 +27,8 @@ public class MyController
     public void verifyID(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws IOException
     {
         MemberDAO dao = new MemberDAO();
-        if(dao.verifyID(request)) printMessage(response, "[중복] 아이디가 이미 존재합니다.", "");
-        else printMessage(response, "[Verified] 이 아이디는 사용 가능합니다.", "");
+        if(dao.verifyID(request)) Util.printMessage(response, "[중복] 아이디가 이미 존재합니다.", "");
+        else Util.printMessage(response, "[Verified] 이 아이디는 사용 가능합니다.", "");
     }
 
     @EndPoint("/joinForm.do")
@@ -39,8 +42,8 @@ public class MyController
     public void join(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws IOException
     {
         MemberDAO dao = new MemberDAO();
-        if(dao.insertMember(request)) printMessage(response, "회원가입에 성공했습니다, 환영합니다!", "/loginForm.do");
-        else printMessage(response, "가입에 실패했습니다, 다시 시도해주세요.", "/joinForm.do");
+        if(dao.insertMember(request)) Util.printMessage(response, "회원가입에 성공했습니다, 환영합니다!", "/loginForm.do");
+        else Util.printMessage(response, "가입에 실패했습니다, 다시 시도해주세요.", "/joinForm.do");
     }
 
     @EndPoint("/loginForm.do")
@@ -83,8 +86,12 @@ public class MyController
         Optional<CompanyVO> optionalVO = dao.verifyOwner(Integer.parseInt(optionalID.get()), request, false);
         if(!optionalVO.isPresent()) return result;
 
+        CompanyVO companyVO =  optionalVO.get();
         response.setContentType("text/html; charset=UTF-8");
-        request.setAttribute("vo", optionalVO.get());
+        request.setAttribute("vo", companyVO);
+
+        EmployeeDAO employeeDAO = new EmployeeDAO();
+        request.setAttribute("list", employeeDAO.getAll(companyVO, request));
         return new Response("company_view.jsp");
     }
 
@@ -107,8 +114,8 @@ public class MyController
     public void insertCompany(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws IOException
     {
         CompanyDAO dao = new CompanyDAO();
-        if(dao.insertCompany(request)) printMessage(response, "회사를 등록했습니다.", "/companyList.do");
-        else printMessage(response, "회사를 등록하는데 실패했습니다.", "/companyList.do");
+        if(dao.insertCompany(request)) Util.printMessage(response, "회사를 등록했습니다.", "/companyList.do");
+        else Util.printMessage(response, "회사를 등록하는데 실패했습니다.", "/companyList.do");
     }
 
     @EndPoint("/updateCompany.do")
@@ -121,7 +128,7 @@ public class MyController
         Optional<String> optionalID = Optional.ofNullable(request.getParameter("companyID"));
         if(!optionalID.isPresent()) return new Response("/companyList.do", true);
 
-        if(!dao.updateCompany(Integer.parseInt(optionalID.get()), request)) printMessage(response, "수정에 실패했습니다.", "");
+        if(!dao.updateCompany(Integer.parseInt(optionalID.get()), request)) Util.printMessage(response, "수정에 실패했습니다.", "");
         return new Response("/companyInfo.do?companyID=" + optionalID.get());
     }
 
@@ -129,9 +136,14 @@ public class MyController
     public Response deleteCompany(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response)
     {
         CompanyDAO dao = new CompanyDAO();
+        EmployeeDAO employeeDAO = new EmployeeDAO();
+
         Optional<String> optionalID = Optional.ofNullable(request.getParameter("companyID"));
         if(!optionalID.isPresent()) return new Response("/companyList.do", true);
-        if(!dao.deleteCompany(Integer.parseInt(optionalID.get()), request)) return new Response("/companyInfo.do?companyID=" + optionalID.get(), true);
+        int companyID = Integer.parseInt(optionalID.get());
+
+        if(!dao.deleteCompany(companyID, request)) return new Response("/companyInfo.do?companyID=" + optionalID.get(), true);
+        employeeDAO.deleteEmployees(companyID, request);
         return new Response("/companyList.do", true);
     }
 
@@ -160,16 +172,6 @@ public class MyController
         out.println("<script>");
         out.println("alert('해당 작업에 대한 권한이 존재하지 않습니다.');");
         out.println("history.back();");
-        out.println("</script>");
-    }
-
-    private void printMessage(javax.servlet.http.HttpServletResponse response, String msg, String url) throws IOException
-    {
-        response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        out.println("<script>");
-        out.println("alert('" + msg + "');");
-        if(!url.equals("")) out.println("location.href = " + "'" + url + "'");
         out.println("</script>");
     }
 }
