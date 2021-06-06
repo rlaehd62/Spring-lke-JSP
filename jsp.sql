@@ -19,10 +19,10 @@
 -- Table structure for table `members`
 --
 
-DROP TABLE IF EXISTS `members`;
+DROP TABLE IF EXISTS `MEMBERS`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `members` (
+CREATE TABLE `MEMBERS` (
   `ID` varchar(15) NOT NULL,
   `PW` varchar(10) DEFAULT NULL,
   `NAME` varchar(15) DEFAULT NULL,
@@ -37,19 +37,19 @@ CREATE TABLE `members` (
 -- Dumping data for table `members`
 --
 
-LOCK TABLES `members` WRITE;
-/*!40000 ALTER TABLE `members` DISABLE KEYS */;
-/*!40000 ALTER TABLE `members` ENABLE KEYS */;
+LOCK TABLES `MEMBERS` WRITE;
+/*!40000 ALTER TABLE `MEMBERS` DISABLE KEYS */;
+/*!40000 ALTER TABLE `MEMBERS` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
 -- Table structure for table `company`
 --
 
-DROP TABLE IF EXISTS `company`;
+DROP TABLE IF EXISTS `COMPANY`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `company` (
+CREATE TABLE `COMPANY` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `owner` varchar(30) NOT NULL DEFAULT 'anonymous',
   `address` varchar(300) NOT NULL DEFAULT 'NO ADDRESS',
@@ -63,19 +63,19 @@ CREATE TABLE `company` (
 -- Dumping data for table `company`
 --
 
-LOCK TABLES `company` WRITE;
-/*!40000 ALTER TABLE `company` DISABLE KEYS */;
-/*!40000 ALTER TABLE `company` ENABLE KEYS */;
+LOCK TABLES `COMPANY` WRITE;
+/*!40000 ALTER TABLE `COMPANY` DISABLE KEYS */;
+/*!40000 ALTER TABLE `COMPANY` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
 -- Table structure for table `employee`
 --
 
-DROP TABLE IF EXISTS `employee`;
+DROP TABLE IF EXISTS `EMPLOYEE`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `employee` (
+CREATE TABLE `EMPLOYEE` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL DEFAULT 'unknown',
   `role` varchar(30) NOT NULL DEFAULT 'unknown',
@@ -89,9 +89,9 @@ CREATE TABLE `employee` (
 -- Dumping data for table `employee`
 --
 
-LOCK TABLES `employee` WRITE;
-/*!40000 ALTER TABLE `employee` DISABLE KEYS */;
-/*!40000 ALTER TABLE `employee` ENABLE KEYS */;
+LOCK TABLES `EMPLOYEE` WRITE;
+/*!40000 ALTER TABLE `EMPLOYEE` DISABLE KEYS */;
+/*!40000 ALTER TABLE `EMPLOYEE` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
