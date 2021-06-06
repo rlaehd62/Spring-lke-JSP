@@ -39,7 +39,7 @@ public class CompanyController
         CompanyDAO dao = new CompanyDAO();
 
         Optional<String> optionalID = Optional.ofNullable(request.getParameter("companyID"));
-        if(!optionalID.isPresent()) return new Response("company_write.jsp", true);
+        if(!optionalID.isPresent()) return new Response("company_write.jsp");
 
         Optional<CompanyVO> optionalVO = dao.verifyOwner(Integer.parseInt(optionalID.get()), request, false);
         if(!optionalVO.isPresent()) return new Response("/companyList.do", true);
@@ -90,6 +90,6 @@ public class CompanyController
     {
         CompanyDAO dao = new CompanyDAO();
         request.setAttribute("list", dao.getAll(request));
-        return new Response("index.jsp");
+        return new Response("company_list.jsp");
     }
 }

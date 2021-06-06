@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <Resource
+            name="jdbc/MysqlDB"
+            auth="Container"
+            type="javax.sql.DataSource"
+            username="root"
+            password="mariadb"
+            driverClassName="org.mariadb.jdbc.Driver"
+            factory="org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory"
+            url="jdbc:mariadb://101.101.216.59:3306/JSP?serverTimezone=Asia/Seoul"
+            maxTotal="500"
+            maxIdle="100"
+            URIEncoding="UTF-8"
+            maxWaitMillis="-1"/>
+</Context>

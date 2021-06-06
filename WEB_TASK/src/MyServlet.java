@@ -43,6 +43,7 @@ public class MyServlet extends javax.servlet.http.HttpServlet
 
                     RequestDispatcher dispatcher = request.getRequestDispatcher(res.getPath());
                     dispatcher.forward(request, response);
+                    return;
                 } catch (Exception e)
                 {
                     e.printStackTrace();

@@ -10,6 +10,7 @@
         <element id="directory" name="lib">
           <element id="library" level="application" name="org.reflections:reflections:0.9.12" />
           <element id="file-copy" path="$PROJECT_DIR$/lib/cos.jar" />
+          <element id="library" level="module" name="org.mariadb.jdbc:mariadb-java-client:2.7.3" module-name="WEB_TASK" />
         </element>
       </element>
     </root>

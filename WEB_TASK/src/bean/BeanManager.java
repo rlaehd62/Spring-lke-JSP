@@ -9,11 +9,12 @@ import java.util.*;
 
 public class BeanManager
 {
-    static
+    private static BeanManager instance;
+    private final Map<String, ControllerBean> manager;
+
+    private BeanManager()
     {
-        // Scan
-        BeanManager manager = BeanManager.getInstance();
-        Map<String, ControllerBean> beanManager = manager.getManager();
+        manager = new HashMap<>();
 
         Reflections reflections = new Reflections();
         Set<Class<?>> classSet = reflections.getTypesAnnotatedWith(CustomController.class);
@@ -28,7 +29,7 @@ public class BeanManager
 
                 ControllerBean bean = new ControllerBean(instance);
                 Map<String, Method> map = bean.getMethodMap();
-                beanManager.put(ControllerName, bean);
+                manager.put(ControllerName, bean);
 
                 for(Method method : methods)
                 {
@@ -45,10 +46,6 @@ public class BeanManager
         }
     }
 
-    private static BeanManager instance;
-    private final Map<String, ControllerBean> manager;
-
-    private BeanManager() { manager = new HashMap<>(); }
     public static BeanManager getInstance()
     {
         return (Objects.nonNull(instance)) ? instance : (instance = new BeanManager());
