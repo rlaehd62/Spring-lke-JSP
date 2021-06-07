@@ -78,32 +78,38 @@ public class EmployeeDAO
     }
     public boolean updateEmployee(int employeeID, javax.servlet.http.HttpServletRequest request)
     {
-        try
-        {
-            String name = request.getParameter("name");
-            String role = request.getParameter("role");
-            String comm = request.getParameter("comment");
-            int company_id = Integer.parseInt(request.getParameter("companyID"));
+        String name = request.getParameter("name");
+        String role = request.getParameter("role");
+        String comm = request.getParameter("comment");
+        int company_id = Integer.parseInt(request.getParameter("companyID"));
 
-            con = ds.getConnection();
-            pstmt=con.prepareStatement("UPDATE EMPLOYEE SET NAME = ?, ROLE = ?, COMMENT = ?, COMPANY_ID = ? WHERE ID = ?;");
-            pstmt.setString(1, name);
-            pstmt.setString(2, role);
-            pstmt.setString(3, comm);
-            pstmt.setInt(4, company_id);
-            pstmt.setInt(5, employeeID);
+        CompanyDAO dao = new CompanyDAO();
+        Optional<CompanyVO> optional = dao.verifyOwner(company_id, request, false);
 
-            int result=pstmt.executeUpdate();
-            return (result != 0);
-        } catch (Exception e)
+        return optional.map(vo ->
         {
-            e.printStackTrace();
-        } finally
-        {
-            close();
-        }
+            try
+            {
+                con = ds.getConnection();
+                pstmt=con.prepareStatement("UPDATE EMPLOYEE SET NAME = ?, ROLE = ?, COMMENT = ?, COMPANY_ID = ? WHERE ID = ?;");
+                pstmt.setString(1, name);
+                pstmt.setString(2, role);
+                pstmt.setString(3, comm);
+                pstmt.setInt(4, company_id);
+                pstmt.setInt(5, employeeID);
 
-        return false;
+                int result=pstmt.executeUpdate();
+                return (result != 0);
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            } finally
+            {
+                close();
+            }
+
+            return false;
+        }).orElse(Boolean.FALSE);
     }
 
     public void deleteEmployees(int companyID, javax.servlet.http.HttpServletRequest request)
@@ -164,7 +170,7 @@ public class EmployeeDAO
             {
                 int id = rs.getInt("ID");
                 String name = rs.getString("NAME");
-                String role  = rs.getString("ROLE");
+                String role = rs.getString("ROLE");
                 String comment = rs.getString("COMMENT");
                 int company_id = rs.getInt("COMPANY_ID");
                 vo = new EmployeeVO(id, company_id, name, role, comment);

@@ -83,49 +83,26 @@ public class CompanyDAO
 
     public boolean updateCompany(int companyID, javax.servlet.http.HttpServletRequest request)
     {
-        AtomicBoolean result = new AtomicBoolean(false);
-        try
-        {
-            String name = request.getParameter("name");
-            String addr = request.getParameter("address");
-            String comm = request.getParameter("comment");
-
-            con = ds.getConnection();
-
-            System.out.println("NAME >>  " + name);
-            System.out.println("COMMENT >> " + comm);
-
-            pstmt=con.prepareStatement("UPDATE COMPANY SET NAME = ?, ADDRESS = ?, COMMENT = ? WHERE ID = ?;");
-            pstmt.setString(1, name);
-            pstmt.setString(2, addr);
-            pstmt.setString(3, comm);
-            pstmt.setInt(4, companyID);
-            result.set(pstmt.executeUpdate() != 0);
-
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        } finally
-        {
-            close();
-        }
-
-        return result.get();
-    }
-
-    public boolean deleteCompany(int companyID, javax.servlet.http.HttpServletRequest request)
-    {
         Optional<CompanyVO> optional = verifyOwner(companyID, request, false);
-        AtomicBoolean result = new AtomicBoolean(false);
-
-        optional.ifPresent(vo ->
+        return optional.map(vo ->
         {
             try
             {
-                pstmt=con.prepareStatement("DELETE FROM COMPANY WHERE ID = ? AND OWNER = ?;");
-                pstmt.setInt(1, companyID);
-                pstmt.setString(2, vo.getOwner());
-                result.set(pstmt.executeUpdate() != 0);
+                String name = request.getParameter("name");
+                String addr = request.getParameter("address");
+                String comm = request.getParameter("comment");
+
+                con = ds.getConnection();
+                System.out.println("NAME >>  " + name);
+                System.out.println("COMMENT >> " + comm);
+
+                pstmt=con.prepareStatement("UPDATE COMPANY SET NAME = ?, ADDRESS = ?, COMMENT = ? WHERE ID = ?;");
+                pstmt.setString(1, name);
+                pstmt.setString(2, addr);
+                pstmt.setString(3, comm);
+                pstmt.setInt(4, companyID);
+                return pstmt.executeUpdate() != 0;
+
             } catch (Exception e)
             {
                 e.printStackTrace();
@@ -133,9 +110,33 @@ public class CompanyDAO
             {
                 close();
             }
-        });
 
-        return result.get();
+            return false;
+        }).orElse(Boolean.FALSE);
+    }
+
+    public boolean deleteCompany(int companyID, javax.servlet.http.HttpServletRequest request)
+    {
+        Optional<CompanyVO> optional = verifyOwner(companyID, request, false);
+        return optional.map(vo ->
+        {
+            try
+            {
+                con = ds.getConnection();
+                pstmt=con.prepareStatement("DELETE FROM COMPANY WHERE ID = ? AND OWNER = ?;");
+                pstmt.setInt(1, companyID);
+                pstmt.setString(2, vo.getOwner());
+                return pstmt.executeUpdate() != 0;
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            } finally
+            {
+                close();
+            }
+
+            return false;
+        }).orElse(Boolean.FALSE);
     }
 
     public Optional<CompanyVO> verifyOwner(int companyID, javax.servlet.http.HttpServletRequest request, boolean isConnected)
@@ -168,6 +169,9 @@ public class CompanyDAO
         } catch (Exception e)
         {
             e.printStackTrace();
+        } finally
+        {
+            close();
         }
 
         return Optional.empty();
@@ -217,6 +221,7 @@ public class CompanyDAO
         {
             close();
         }
+
         return Collections.emptyList();
     }
 
