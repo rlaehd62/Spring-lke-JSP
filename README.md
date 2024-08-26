@@ -1,3 +1,4 @@
 # Spring-Like JSP
-- 명함 관리 프로그램인데 이제 Spring 향이 첨가된 ..
-- 처음 웹 프로그래밍 공부할 때 호기심으로 만들었던 ..
+- Spring Boot의 원리를 보고 JSP로 구현한 프로젝트
+- Reflection을 통해서 Spring Boot 느낌으로 동작한다.
+- 간단한 명함 관리 기능을 제공한다.
